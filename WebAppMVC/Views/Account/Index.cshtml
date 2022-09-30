@@ -1,0 +1,172 @@
+﻿@{
+    Layout = "";
+}
+@*@model LoginViewModel
+    @{
+        ViewData["Title"] = "Index";
+    }
+
+
+    <h2 class="text-center">Login</h2>
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <div class="jumbotron">
+                <form role="form" asp-action="Login" asp-controller="Account" method="post">
+                    <div class="form-group">
+                        <label for="Email">User Name</label>
+                        <input type="email" name="Email" id="txtName" asp-for="Email" autocomplete="off" class="form-control input-sm" placeholder="Email Address">
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="Password">Password</label>
+                        <input type="password" name="Password" id="txtPassword" asp-for="Password" autocomplete="off" class="form-control input-sm" placeholder="Password">
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+                    <input type="submit" id="btnGet"value="Login" class="btn btn-info btn-block">
+                </form>
+            </div>
+        </div>
+
+    </div>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script type="text/javascript">
+            $(function () {
+                $("#btnGet").click(function () {
+                    var person = '{Email: "' + $("#txtName").val() + '", Password: "' + $("#txtPassword").val() + '" }';
+                    $.ajax({
+                        type: "POST",
+                        url: "/api/Account/Login",
+                        data: person,
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (response) {
+                            alert("Hello: " + response.Name + ".\nCurrent Date and Time: " + response.DateTime);
+                        },
+                        failure: function (response) {
+                            alert(response.responseText);
+                        },
+                        error: function (response) {
+                            alert(response.responseText);
+                        }
+                    });
+                });
+            });
+    </script>*@
+
+<!DOCTYPE html>
+<html>
+<head>
+   
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    <script>
+        $(document).ready(function () {
+            $('#lblmsg').removeClass("error_show").hide();
+            $('#txt_Name').on('input', function() {
+	            var input=$(this);
+                var re = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+	            var is_email=re.test(input.val());
+	            if(is_email){input.removeClass("invalid").addClass("valid");}
+	            else{input.removeClass("valid").addClass("invalid");}
+            });
+
+            $('#txt_Name').keyup(function (event) {
+                $('#lblmsg').removeClass("error_show").hide();
+                var input = $(this);
+                var message = $(this).val();
+                console.log(message);
+                if (message) { input.removeClass("invalid").addClass("valid"); }
+                else { input.removeClass("valid").addClass("invalid"); }
+            });
+
+            $('#txt_Password').keyup(function (event) {
+                $('#lblmsg').removeClass("error_show").hide();
+                var input = $(this);
+                var message = $(this).val();
+                console.log(message);
+                if (message) { input.removeClass("invalid").addClass("valid"); }
+                else { input.removeClass("valid").addClass("invalid"); }
+            });
+
+            $("#btnGet").click(function () {
+                var form_data = $("#myform").serializeArray();
+                var error_free = true;
+                for (var input in form_data) {
+                    var element = $("#txt_" + form_data[input]['name']);
+                    var valid = element.hasClass("valid");
+                    var error_element = $("span", element.parent());
+                    if (!valid) { error_element.removeClass("error").addClass("error_show"); error_free = false; }
+                    else { error_element.removeClass("error_show").addClass("error"); }
+                }
+                if (!error_free) {
+                    event.preventDefault();
+                }
+                else {
+                    
+                }
+
+                $.ajax({
+                    url: "https://localhost:44392/api/Account/Login",
+                    type: "GET",
+                    data: { 'Email': $("#txt_Name").val(), 'Password': $("#txt_Password").val() },
+                    success: function (data, textStatus, xhr) {
+                        
+                        if (xhr.status == 500) {
+                            $('#lblmsg').text("please enter valid credentials").show().addClass("error_show");
+                        }
+                        else {
+                            window.location.href = '/Home/Index/';
+                        }
+                        
+                    }, error: function (err) {
+                        $('#lblmsg').text("please enter valid credentials").show().addClass("error_show");
+                    }
+                })
+            });
+        });
+    </script>
+</head>
+<body>
+    <style>
+        .error {
+            display: none;
+            margin-left: 10px;
+        }
+
+        .error_show {
+            color: red;
+            margin-left: 10px;
+        }
+    </style>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-md-offset-3">
+                <div class="jumbotron">
+                    <form id="myform" role="form" asp-action="Login" asp-controller="Account" method="post">
+    <h2 class="text-center">Login</h2>
+    <div class="form-group">
+        <label for="Email">User Name</label>
+        <input type="email" name="Email" id="txt_Name" autocomplete="off" class="form-control input-sm" placeholder="Email Address">
+        <span class="error">A valid email address is required</span>
+                    </div>
+    <div class="form-group">
+        <label for="Password">Password</label>
+        <input type="password" name="Password" id="txt_Password" autocomplete="off" class="form-control input-sm" placeholder="Password">
+        <span class="error">This field is required</span>
+                    </div>
+        <input type="button" id="btnGet" value="Login" class="btn btn-info btn-block">
+        <div> @Html.ActionLink("Click here to Sign UP", "Registration", new { })</div>
+        <span id="lblmsg">A valid email address is required</span>
+    </form>
+                   
+                </div>
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>
